@@ -1,6 +1,6 @@
 %section.genre
   %header.clearfix
-    %h1 Comedies
+    %h1= @category.name
     .genre_sorting
       Sort by:
       %select(name="")
@@ -9,6 +9,6 @@
         %option(value="rating") Rating
   %article.row
   .video.col-md-2
-    - 30.times do
-      = link_to "", nil do
-        %img(src="/tmp/#{['futurama', 'south_park', 'family_guy'].sample}.jpg")
+    - @category.videos.each do |movie|
+      = link_to video_path(movie) do
+        %img{src: movie.small_cover_url}

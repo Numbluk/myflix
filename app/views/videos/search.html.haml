@@ -1,0 +1,12 @@
+%header
+%h3.search
+  Results:
+  =@search_text
+- if @videos.empty?
+  %p No videos related to search
+- else
+  .videos.row
+    - @videos.each do |video|
+      .video.col-sm-2
+        = link_to video_path(video) do
+          %img{src: video.small_cover_url}
