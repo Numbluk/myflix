@@ -9,21 +9,13 @@ describe ReviewsController do
 
       context 'with valid input' do
         before do
-          post :create, video_id: video.id, content: 'great movie!', rating: 5
+          post :create, video_id: video.id, review: Fabricate.attributes_for(:review)
         end
 
         let (:video) { Fabricate(:video) }
 
-        it 'sets the content of @review' do
-          expect(assigns(:review).content).to eq('great movie!')
-        end
-
         it 'creates an association with logged in user' do
           expect(Review.first.user_id).to eq(session[:user_id])
-        end
-
-        it 'sets the rating' do
-          expect(assigns(:review).rating).to eq(5)
         end
 
         it 'creates the review' do
@@ -47,17 +39,17 @@ describe ReviewsController do
         let (:video) { Fabricate(:video) }
 
         it 'does not create the review' do
-          post :create, video_id: video.id, content: '', rating: 5
+          post :create, video_id: video.id, review: { content: '', rating: 5 }
           expect(Review.count).to eq(0)
         end
 
         it 'sets up @video' do
-          post :create, video_id: video.id, content: '', rating: 5
+          post :create, video_id: video.id, review: { content: '', rating: 5 }
           expect(assigns(:video)).to eq(video)
         end
 
         it 'renders the video template' do
-          post :create, video_id: video.id, content: '', rating: ''
+          post :create, video_id: video.id, review: { content: '', rating: '' }
           expect(response).to render_template 'videos/show'
         end
       end
