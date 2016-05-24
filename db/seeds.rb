@@ -24,4 +24,7 @@ Video.create(title: "South Park", description: "Young kids with crazy adventures
 
 Video.create(title: "Monk", description: "A clean detective", small_cover_url: "/tmp/monk.jpg", large_cover_url: "/tmp/monk_large.jpg", category_id: 2)
 
-Video.create(title: "South Park", description: "Young kids with crazy adventures.", small_cover_url: "/tmp/south_park.jpg", large_cover_url: "/tmp/south_park.jpg", category_id: 3)
+south_park = Video.create(title: "South Park", description: "Young kids with crazy adventures.", small_cover_url: "/tmp/south_park.jpg", large_cover_url: "/tmp/south_park.jpg", category_id: 3)
+
+Review.create(content: 'Great movie!', rating: 5, video: south_park)
+Review.create(content: 'Sucked bad!', rating: 1, video: south_park)
