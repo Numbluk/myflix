@@ -18,7 +18,7 @@
             - @queue_items.each do |queue_item|
               %tr
                 %td
-                  = text_field_tag "queue_items[#{queue_item.id}]", queue_item.position, class: 'form-control', form: 'queue_items_form'
+                  = text_field_tag "queue_ids_with_positions[#{queue_item.id}]", queue_item.position, class: 'form-control', form: 'queue_items_form'
                 %td
                   = link_to queue_item.video_title, video_path(queue_item.video)
                 %td

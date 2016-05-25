@@ -130,7 +130,7 @@ describe QueueItemsController do
         queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
         queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
         original_queue_item2_position = queue_item2.position
-        patch :update_queues, queue_items: { queue_item1.id.to_s => 2,  queue_item2.id.to_s => 1 }
+        patch :update_queues, queue_ids_with_positions: { queue_item1.id.to_s => 2,  queue_item2.id.to_s => 1 }
         expect(QueueItem.first.position).to eq(2)
       end
 
@@ -140,7 +140,7 @@ describe QueueItemsController do
         queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
         queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
         original_queue_item2_position = queue_item2.position
-        patch :update_queues, queue_items: { queue_item1.id.to_s => 1,  queue_item2.id.to_s => 1 }
+        patch :update_queues, queue_ids_with_positions: { queue_item1.id.to_s => 1,  queue_item2.id.to_s => 1 }
         expect(queue_item2.position).to eq(2)
       end
 
@@ -150,7 +150,7 @@ describe QueueItemsController do
         queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
         queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
         original_queue_item2_position = queue_item2.position
-        patch :update_queues, queue_items: { queue_item1.id.to_s => 1,  queue_item2.id.to_s => 1 }
+        patch :update_queues, queue_ids_with_positions: { queue_item1.id.to_s => 1,  queue_item2.id.to_s => 1 }
         expect(flash[:error]).not_to be_empty
       end
 
@@ -160,7 +160,7 @@ describe QueueItemsController do
         queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
         queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
         original_queue_item2_position = queue_item2.position
-        patch :update_queues, queue_items: { queue_item1.id.to_s => 0,  queue_item2.id.to_s => 2 }
+        patch :update_queues, queue_ids_with_positions: { queue_item1.id.to_s => 0,  queue_item2.id.to_s => 2 }
         expect(QueueItem.first.position).to eq(1)
         expect(QueueItem.second.position).to eq(2)
       end
@@ -171,7 +171,7 @@ describe QueueItemsController do
         queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
         queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
         original_queue_item2_position = queue_item2.position
-        patch :update_queues, queue_items: { queue_item1.id.to_s => 0,  queue_item2.id.to_s => 'l' }
+        patch :update_queues, queue_ids_with_positions: { queue_item1.id.to_s => 0,  queue_item2.id.to_s => 'l' }
         expect(QueueItem.first.position).to eq(1)
         expect(QueueItem.second.position).to eq(2)
       end
@@ -182,7 +182,7 @@ describe QueueItemsController do
         queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
         queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
         original_queue_item2_position = queue_item2.position
-        patch :update_queues, queue_items: { queue_item1.id.to_s => 0,  queue_item2.id.to_s => 'l' }
+        patch :update_queues, queue_ids_with_positions: { queue_item1.id.to_s => 0,  queue_item2.id.to_s => 'l' }
         expect(flash[:error]).not_to be_empty
       end
 
@@ -192,7 +192,7 @@ describe QueueItemsController do
         queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
         queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
         original_queue_item2_position = queue_item2.position
-        patch :update_queues, queue_items: { queue_item1.id.to_s => 1,  queue_item2.id.to_s => 1000 }
+        patch :update_queues, queue_ids_with_positions: { queue_item1.id.to_s => 1,  queue_item2.id.to_s => 1000 }
         expect(QueueItem.first.position).to eq(1)
         expect(QueueItem.second.position).to eq(2)
       end
@@ -203,7 +203,7 @@ describe QueueItemsController do
         queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
         queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
         original_queue_item2_position = queue_item2.position
-        patch :update_queues, queue_items: { queue_item1.id.to_s => 1,  queue_item2.id.to_s => 1000 }
+        patch :update_queues, queue_ids_with_positions: { queue_item1.id.to_s => 1,  queue_item2.id.to_s => 1000 }
         expect(flash[:error]).not_to be_empty
       end
     end

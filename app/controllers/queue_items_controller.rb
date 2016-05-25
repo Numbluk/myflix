@@ -12,7 +12,7 @@ class QueueItemsController < ApplicationController
   end
 
   def update_queues
-    queue_ids_with_new_positions = params[:queue_items]
+    queue_ids_with_new_positions = params[:queue_ids_with_positions]
     if queue_items_have_same_positions?(queue_ids_with_new_positions)
       flash[:error] = 'Items cannot have same positions.'
     else
