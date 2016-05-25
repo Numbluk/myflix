@@ -27,13 +27,12 @@ describe UsersController do
 
     context 'with invalid input' do
       before do
-        post :create, user: { full_name: '', email: '', password: 'password123'}
+        post :create, user: { full_name: '', email: '', password: 'password123' }
       end
 
       it 'sets up @user with input' do
-        user = { full_name: 'Dave Thomas', email: 'Dave@example.com', password: 'password123'}
-        post :create, user: user
-        expect(assigns(:user).full_name).to eq(user[:full_name])
+        post :create, user: Fabricate.attributes_for(:user, full_name: 'Dave Thomas')
+        expect(assigns(:user).full_name).to eq('Dave Thomas')
       end
 
       it 'does not create the @user' do
