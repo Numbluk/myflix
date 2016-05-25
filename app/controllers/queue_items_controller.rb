@@ -12,11 +12,12 @@ class QueueItemsController < ApplicationController
   end
 
   def update_queues
-    queue_ids_with_new_positions = params[:queue_ids_with_positions]
-    if queue_items_have_same_positions?(queue_ids_with_new_positions)
+    update_reviews(params[:queue_ids_with_ratings]) if params[:queue_ids_with_ratings]
+    queue_ids_with_positions = params[:queue_ids_with_positions]
+    if queue_items_have_same_positions?(queue_ids_with_positions)
       flash[:error] = 'Items cannot have same positions.'
     else
-      flash[:error] = QueueItem.save_and_update_positions(queue_ids_with_new_positions)
+      flash[:error] = QueueItem.save_and_update_positions(queue_ids_with_positions)
     end
 
     redirect_to my_queue_path
@@ -29,6 +30,19 @@ class QueueItemsController < ApplicationController
   end
 
   private
+
+  def update_reviews(queue_ids_with_ratings)
+    queue_ids_with_ratings.each do |id, rating|
+      queue_item = QueueItem.find(id)
+      review = Review.find_by(user: current_user, video: queue_item.video)
+      if review
+        review.update(rating: rating.to_i)
+      else
+        review = Review.new(user: current_user, video: queue_item.video, rating: rating)
+        review.save(validate: false)
+      end
+    end
+  end
 
   def queue_items_have_same_positions?(items)
     positions = items.flatten.select.each_with_index { |_, i| i.odd? }

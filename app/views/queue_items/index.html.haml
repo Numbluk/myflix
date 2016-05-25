@@ -23,10 +23,12 @@
                   = link_to queue_item.video_title, video_path(queue_item.video)
                 %td
                   = button_to "Play", nil, class: "btn btn-default"
-                %td= queue_item.rating
+                %td
+                  = select_tags_for_ratings(queue_item, 'queue_items_form')
                 %td
                   = link_to queue_item.category_name, category_path(queue_item.category)
                 %td
                   = link_to queue_item_path(queue_item), method: :delete do
                     %i.glyphicon.glyphicon-remove
-        = submit_tag "Update Instant Queue", class: "btn btn-default", form: 'queue_items_form'
+        - if @queue_items.any?
+          = submit_tag "Update Instant Queue", class: "btn btn-default", form: 'queue_items_form'
