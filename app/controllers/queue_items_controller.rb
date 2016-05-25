@@ -12,22 +12,13 @@ class QueueItemsController < ApplicationController
   end
 
   def update_queues
-    queue_items = params[:queue_items]
-    if queue_items_have_same_positions?(queue_items)
+    queue_ids_with_new_positions = params[:queue_items]
+    if queue_items_have_same_positions?(queue_ids_with_new_positions)
       flash[:error] = 'Items cannot have same positions.'
-      redirect_to my_queue_path and return
+    else
+      flash[:error] = QueueItem.save_and_update_positions(queue_ids_with_new_positions)
     end
 
-    begin
-      ActiveRecord::Base.transaction do
-        queue_items.each do |id, position|
-            queue_item = QueueItem.find(id.to_i)
-            queue_item.update!(position: position)
-        end
-      end
-    rescue ActiveRecord::RecordInvalid => e
-      flash[:error] = e.message
-    end
     redirect_to my_queue_path
   end
 
