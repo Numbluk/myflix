@@ -16,6 +16,15 @@ describe QueueItemsController do
       get :index
       expect(response).to redirect_to sign_in_path
     end
+
+    it 'orders the queue items in ascending order by position' do
+      user = Fabricate(:user)
+      session[:user_id] = user.id
+      queue_item1 = Fabricate(:queue_item, user: user, position: 1)
+      queue_item2 = Fabricate(:queue_item, user: user, position: 2)
+      get :index
+      expect(assigns(:queue_items)).to eq([queue_item1, queue_item2])
+    end
   end
 
   describe 'POST create' do
@@ -105,6 +114,98 @@ describe QueueItemsController do
       session[:user_id] = nil
       delete :destroy, id: 1
       expect(response).to redirect_to sign_in_path
+    end
+  end
+
+  describe 'PATCH update_queues' do
+    context 'for authenticated users' do
+      it 'redirects to my queue path' do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+      end
+
+      it 'changes the position of two queue items' do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
+        queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
+        original_queue_item2_position = queue_item2.position
+        patch :update_queues, queue_items: { queue_item1.id.to_s => 2,  queue_item2.id.to_s => 1 }
+        expect(QueueItem.first.position).to eq(2)
+      end
+
+      it 'does not change the position of several list items if two positions are same' do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
+        queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
+        original_queue_item2_position = queue_item2.position
+        patch :update_queues, queue_items: { queue_item1.id.to_s => 1,  queue_item2.id.to_s => 1 }
+        expect(queue_item2.position).to eq(2)
+      end
+
+      it 'returns an error notice if two positions are the same' do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
+        queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
+        original_queue_item2_position = queue_item2.position
+        patch :update_queues, queue_items: { queue_item1.id.to_s => 1,  queue_item2.id.to_s => 1 }
+        expect(flash[:error]).not_to be_empty
+      end
+
+      it 'does not change position if a position is less than 1' do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
+        queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
+        original_queue_item2_position = queue_item2.position
+        patch :update_queues, queue_items: { queue_item1.id.to_s => 0,  queue_item2.id.to_s => 2 }
+        expect(QueueItem.first.position).to eq(1)
+        expect(QueueItem.second.position).to eq(2)
+      end
+
+      it 'does not change the position if something other than an integer is submitted' do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
+        queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
+        original_queue_item2_position = queue_item2.position
+        patch :update_queues, queue_items: { queue_item1.id.to_s => 0,  queue_item2.id.to_s => 'l' }
+        expect(QueueItem.first.position).to eq(1)
+        expect(QueueItem.second.position).to eq(2)
+      end
+
+      it 'if position is less than 1 or something other than integer then error message exists' do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
+        queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
+        original_queue_item2_position = queue_item2.position
+        patch :update_queues, queue_items: { queue_item1.id.to_s => 0,  queue_item2.id.to_s => 'l' }
+        expect(flash[:error]).not_to be_empty
+      end
+
+      it 'does not change position if position is great than number of queue items' do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
+        queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
+        original_queue_item2_position = queue_item2.position
+        patch :update_queues, queue_items: { queue_item1.id.to_s => 1,  queue_item2.id.to_s => 1000 }
+        expect(QueueItem.first.position).to eq(1)
+        expect(QueueItem.second.position).to eq(2)
+      end
+
+      it 'if position is greater than number of queue items then error message exists' do
+        user = Fabricate(:user)
+        session[:user_id] = user.id
+        queue_item1 = Fabricate(:queue_item, id: 1, position: 1)
+        queue_item2 = Fabricate(:queue_item, id: 2, position: 2)
+        original_queue_item2_position = queue_item2.position
+        patch :update_queues, queue_items: { queue_item1.id.to_s => 1,  queue_item2.id.to_s => 1000 }
+        expect(flash[:error]).not_to be_empty
+      end
     end
   end
 end
