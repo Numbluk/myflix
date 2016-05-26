@@ -9,18 +9,18 @@ describe Category do
 
     it 'returns the six in reverse created_at' do
       first = Fabricate(:video, category: drama)
-      6.times { Fabricate(:video, category: drama) }
+      Fabricate.times(6, :video, category: drama)
 
       expect(drama.recent_videos).not_to include(first)
     end
 
     it 'returns 6 movies if there are more than 6' do
-      7.times { Fabricate(:video, category: drama) }
+      Fabricate.times(7, :video, category: drama)
       expect(drama.recent_videos.count).to eq(6)
     end
 
     it 'returns all the movies if there are less than six movies' do
-      3.times { Fabricate(:video, category: drama) }
+      Fabricate.times(3, :video, category: drama)
 
       expect(drama.recent_videos.count).to eq(3)
     end

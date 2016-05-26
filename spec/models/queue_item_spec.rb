@@ -34,7 +34,7 @@ describe QueueItem do
       category = Fabricate(:category, name: 'comedies')
       video = Fabricate(:video, category: category)
       queue_item = Fabricate(:queue_item, video: video)
-      expect(queue_item.category_name).to eq("comedies")
+      expect(queue_item.category_name).to eq('comedies')
     end
   end
 
@@ -49,25 +49,28 @@ describe QueueItem do
 
   describe '#position_cannot_be_less_than_one' do
     it 'raises an error if position is less than 1' do
-      expect{Fabricate(:queue_item, position: 0)}.to raise_error
+      expect { Fabricate(:queue_item, position: 0) }.to raise_error
     end
 
     it 'does not raise an error if position is nil' do
-      expect{Fabricate(:queue_item, position: nil)}.not_to raise_error
+      expect { Fabricate(:queue_item, position: nil) }.not_to raise_error
     end
   end
 
   describe '#position_cannot_be_greater_than_queue_items_count' do
     it 'raises an error if position is greater than number of QueueItems' do
-      expect{Fabricate(:queue_item, position: 1000)}.to raise_error
+      expect { Fabricate(:queue_item, position: 1000) }.to raise_error
     end
 
     it 'does not raise an error if position is nil' do
-      expect{Fabricate(:queue_item, position: nil)}.not_to raise_error
+      expect { Fabricate(:queue_item, position: nil) }.not_to raise_error
     end
 
     it 'does not raise an error if item does not already exist' do
-      expect{Fabricate(:queue_item)}.not_to raise_error
+      expect { Fabricate(:queue_item) }.not_to raise_error
     end
+  end
+
+  describe '#save_and_update_positions' do
   end
 end

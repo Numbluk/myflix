@@ -12,12 +12,13 @@ class QueueItem < ActiveRecord::Base
     begin
       ActiveRecord::Base.transaction do
         queue_ids_with_positions.each do |id, position|
-            queue_item = QueueItem.find(id.to_i)
-            queue_item.update!(position: position)
+          queue_item = QueueItem.find(id.to_i)
+          queue_item.update!(position: position)
         end
       end
+      nil
     rescue ActiveRecord::RecordInvalid => e
-      return e.message
+      e.message
     end
   end
 
@@ -28,13 +29,13 @@ class QueueItem < ActiveRecord::Base
   end
 
   def position_cannot_be_greater_than_queue_items_count
-    if (QueueItem.exists?(id) && !position.nil? && position > QueueItem.count) || (!QueueItem.exists?(id) && !position.nil? && position > QueueItem.count + 1)
+    if (QueueItem.exists?(id) && position && position > QueueItem.count) || (!QueueItem.exists?(id) && position && position > QueueItem.count + 1)
       errors.add(:position, "can't be greater than number of queue items")
     end
   end
 
   def rating
-    review = user.reviews.find_by(video: self.video)
+    review = user.reviews.find_by(video: video)
     review.rating if review
   end
 

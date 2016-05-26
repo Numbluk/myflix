@@ -2,7 +2,7 @@ class QueueItemsController < ApplicationController
   before_filter :require_user
 
   def index
-    @queue_items = current_user.queue_items.order("position ASC")
+    @queue_items = current_user.queue_items.order("position")
   end
 
   def create
@@ -14,10 +14,10 @@ class QueueItemsController < ApplicationController
   def update_queues
     update_reviews(params[:queue_ids_with_ratings]) if params[:queue_ids_with_ratings]
     queue_ids_with_positions = params[:queue_ids_with_positions]
-    if queue_items_have_same_positions?(queue_ids_with_positions)
+    if queue_items_have_different_positions?(queue_ids_with_positions) && QueueItem.save_and_update_positions(queue_ids_with_positions)
       flash[:error] = 'Items cannot have same positions.'
     else
-      flash[:error] = QueueItem.save_and_update_positions(queue_ids_with_positions)
+      flash[:error] = 'Items cannot have sam'
     end
 
     redirect_to my_queue_path
@@ -44,9 +44,9 @@ class QueueItemsController < ApplicationController
     end
   end
 
-  def queue_items_have_same_positions?(items)
+  def queue_items_have_different_positions?(items)
     positions = items.flatten.select.each_with_index { |_, i| i.odd? }
-    positions.length != positions.uniq.length ? true : false
+    positions == positions.uniq
   end
 
   def queue_video(video)
