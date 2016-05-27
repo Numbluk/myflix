@@ -7,38 +7,27 @@ class QueueItem < ActiveRecord::Base
   delegate :category, to: :video
   delegate :title, to: :video, prefix: :video
 
-  def self.save_and_update_positions(queue_ids_with_positions)
-    begin
-      ActiveRecord::Base.transaction do
-        queue_ids_with_positions.each do |id, position|
-          queue_item = QueueItem.find(id.to_i)
-          queue_item.update!(position: position)
-        end
-      end
-      nil
-    rescue ActiveRecord::RecordInvalid => e
-      e.message
-    end
-  end
-
-  def position_cannot_be_less_than_one
-    if !position.nil? && position < 1
-      errors.add(:position, "can't be less than 1")
-    end
-  end
-
-  def position_cannot_be_greater_than_queue_items_count
-    if (QueueItem.exists?(id) && position && position > QueueItem.count) || (!QueueItem.exists?(id) && position && position > QueueItem.count + 1)
-      errors.add(:position, "can't be greater than number of queue items")
+  def rating=(new_rating)
+    review = Review.where(user_id: user.id, video_id: video.id).first
+    if review
+      review.update_columns(rating: new_rating)
+    else
+      review = Review.new(user: user, video: video, rating: new_rating)
+      review.save(validate: false)
     end
   end
 
   def rating
-    review = user.reviews.find_by(video: video)
     review.rating if review
   end
 
   def category_name
     category.name
+  end
+
+  private
+
+  def review
+    @review ||= Review.where(user_id: user.id, video_id: video.id).first
   end
 end
