@@ -3,9 +3,7 @@ require 'spec_helper'
 describe ReviewsController do
   describe 'POST create' do
     context 'with authorized user' do
-      before do
-        session[:user_id] = Fabricate(:user).id
-      end
+      before { set_current_user }
 
       context 'with valid input' do
         before do
@@ -55,13 +53,8 @@ describe ReviewsController do
       end
     end
 
-    context 'with unauthorized user' do
-      it 'redirects to sign in path when attempt to create review' do
-        session[:user_id] = nil
-        post :create, video_id: Fabricate(:video).id
-        expect(response).to redirect_to sign_in_path
-      end
+    it_behaves_like 'require_sign_in' do
+      let(:action) { post :create, video_id: Fabricate(:video).id }
     end
-
   end
 end

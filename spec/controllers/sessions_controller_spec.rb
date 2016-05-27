@@ -32,7 +32,7 @@ describe SessionsController do
 
     context 'with invalid credentials' do
       let(:dave) { Fabricate(:user) }
-      
+
       before do
         post :create, email: dave.email, password: dave.password = 'll'
       end
@@ -53,7 +53,7 @@ describe SessionsController do
 
   describe 'GET destroy' do
     before do
-      session[:user_id] = Fabricate(:user).id
+      set_current_user
       get :destroy
     end
 
