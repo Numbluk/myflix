@@ -12,12 +12,11 @@ class QueueItemsController < ApplicationController
   end
 
   def update_queues
-    update_reviews(params[:queue_ids_with_ratings]) if params[:queue_ids_with_ratings]
-    queue_ids_with_positions = params[:queue_ids_with_positions]
-    if queue_items_have_different_positions?(queue_ids_with_positions) && QueueItem.save_and_update_positions(queue_ids_with_positions)
-      flash[:error] = 'Items cannot have same positions.'
-    else
-      flash[:error] = 'Items cannot have sam'
+    begin
+      update_queue_items
+      normalize_queue_item_positions
+    rescue ActiveRecord::RecordInvalid
+      flash[:error] = 'Invalid positions'
     end
 
     redirect_to my_queue_path
@@ -26,27 +25,25 @@ class QueueItemsController < ApplicationController
   def destroy
     queue_item = QueueItem.find(params[:id].to_i)
     QueueItem.destroy(queue_item) if queue_item.user == current_user
+    normalize_queue_item_positions
     redirect_to my_queue_path
   end
 
   private
 
-  def update_reviews(queue_ids_with_ratings)
-    queue_ids_with_ratings.each do |id, rating|
-      queue_item = QueueItem.find(id)
-      review = Review.find_by(user: current_user, video: queue_item.video)
-      if review
-        review.update(rating: rating.to_i)
-      else
-        review = Review.new(user: current_user, video: queue_item.video, rating: rating)
-        review.save(validate: false)
+  def update_queue_items
+    ActiveRecord::Base.transaction do
+      params[:queue_items].each do |queue_item_data|
+        queue_item = QueueItem.find(queue_item_data['id'])
+        queue_item.update_attributes!(position: queue_item_data['position']) if queue_item.user == current_user
       end
     end
   end
 
-  def queue_items_have_different_positions?(items)
-    positions = items.flatten.select.each_with_index { |_, i| i.odd? }
-    positions == positions.uniq
+  def normalize_queue_item_positions
+    current_user.queue_items.each_with_index do |queue_item, index|
+      queue_item.update_attributes(position: index + 1)
+    end
   end
 
   def queue_video(video)

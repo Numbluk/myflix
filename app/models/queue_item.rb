@@ -1,6 +1,5 @@
 class QueueItem < ActiveRecord::Base
-  validate :position_cannot_be_less_than_one
-  validate :position_cannot_be_greater_than_queue_items_count
+  validates_numericality_of :position, { only_integer: true }
 
   belongs_to :user
   belongs_to :video
