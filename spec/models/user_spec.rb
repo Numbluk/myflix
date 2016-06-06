@@ -1,4 +1,3 @@
-
 require 'spec_helper'
 
 describe User do
@@ -20,6 +19,39 @@ describe User do
     it 'should return false when the user does not have video in queue' do
       Fabricate(:queue_item, user: user)
       expect(user.video_in_queue?(video)).to eq(false)
+    end
+  end
+
+  describe '#follows?' do
+    it 'returns true if the user has a following relationship with another user' do
+      dave = Fabricate(:user)
+      hal = Fabricate(:user)
+      relationship = Fabricate(:relationship, leader: hal, follower: dave)
+      expect(dave.follows?(hal)).to be true
+    end
+
+    it 'return false if the user does not have a following relationship with another user' do
+      dave = Fabricate(:user)
+      hal = Fabricate(:user)
+      relationship = Fabricate(:relationship, leader: dave, follower: hal)
+      expect(dave.follows?(hal)).to be false
+    end
+  end
+
+  describe '#generate_token' do
+    it 'generates a random string' do
+      user = Fabricate(:user)
+      user.generate_token
+      expect(user.token).to be_present
+    end
+  end
+
+  describe '#remove_token' do
+    it 'removes the token' do
+      user = Fabricate(:user)
+      user.generate_token
+      user.remove_token
+      expect(user.token).to be_nil
     end
   end
 end

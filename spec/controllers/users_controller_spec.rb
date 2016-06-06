@@ -9,6 +9,19 @@ describe UsersController do
     end
   end
 
+  describe 'GET show' do
+    it 'redirects if invalidated user' do
+      get :show, id: 1
+      expect(response).to redirect_to sign_in_path
+    end
+
+    it 'sets up a @user' do
+      set_current_user
+      get :show, id: current_user.id
+      expect(assigns(:user)).to eq(current_user)
+    end
+  end
+
   describe 'POST create' do
     context 'with valid input' do
       before do
@@ -21,6 +34,33 @@ describe UsersController do
 
       it 'redirects to the sign in path' do
         expect(response).to redirect_to sign_in_path
+      end
+    end
+
+    context 'email sending' do
+      let(:dave) { Fabricate.attributes_for(:user) }
+      after { ActionMailer::Base.deliveries.clear }
+
+      it 'sends out an email' do
+        post :create, user: dave
+        expect(ActionMailer::Base.deliveries).to be_present
+      end
+
+      it 'sends the email to the correct user' do
+        post :create, user: dave
+        msg = ActionMailer::Base.deliveries.last
+        expect(msg.to).to eq([dave[:email]])
+      end
+
+      it 'has the correct content' do
+        post :create, user: dave
+        msg = ActionMailer::Base.deliveries.last
+        expect(msg.body).to include("Welcome to MyFlix, #{dave[:full_name]}!")
+      end
+
+      it 'does not send out the email for invalid input' do
+        post :create, user: Fabricate.attributes_for(:user, email: '')
+        expect(ActionMailer::Base.deliveries).to be_empty
       end
     end
 

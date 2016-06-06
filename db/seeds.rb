@@ -7,6 +7,7 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 User.create(email: 'lukas@example.com', password: 'password', full_name: 'Lukas Nimmo')
+User.create(email: 'dave@example.com', password: 'password', full_name: 'Dave')
 
 Category.create(name: 'Drama')
 Category.create(name: 'Comedy')

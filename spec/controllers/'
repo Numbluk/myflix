@@ -1,0 +1,12 @@
+require 'spec_helper'
+
+describe PasswordResetsController do
+  describe 'GET show' do
+    it 'render show template if token is valid' do
+      Fabricate(:user, token: '12345')
+      get :show, id: '12345'
+      expect(response).to render_template :show
+    end
+    it 'redirects to invalid token page if token is invalid'
+  end
+end
