@@ -9,7 +9,7 @@ class UsersController < ApplicationController
     @user = User.new(users_params)
     if @user.save
       users_follow_each_other_if_token(@user)
-      AppMailer.send_welcome_email(@user).deliver
+      AppMailer.delay.send_welcome_email(@user.id)
       redirect_to sign_in_path
     else
       render :new

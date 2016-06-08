@@ -12,6 +12,8 @@ gem 'jquery-rails'
 gem 'pg'
 gem 'bcrypt'
 gem 'fabrication'
+gem 'sidekiq'
+gem 'unicorn'
 
 group :development do
   gem 'thin'
