@@ -5,3 +5,9 @@ shared_examples 'require_sign_in' do
     expect(response).to redirect_to sign_in_path
   end
 end
+
+shared_examples 'generate_token' do
+  it 'generates a token' do
+
+  end
+end

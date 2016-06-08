@@ -6,6 +6,7 @@ describe User do
   it { should validate_presence_of(:full_name) }
   it { should validate_uniqueness_of(:email) }
   it { should have_many(:queue_items).order('position') }
+  it { should have_many(:invitations) }
 
   describe '#video_in_queue?' do
     let(:user) { Fabricate(:user) }
@@ -35,6 +36,15 @@ describe User do
       hal = Fabricate(:user)
       relationship = Fabricate(:relationship, leader: dave, follower: hal)
       expect(dave.follows?(hal)).to be false
+    end
+  end
+
+  describe '#follow' do
+    it 'makes a user follow another user' do
+      dave = Fabricate(:user)
+      hal = Fabricate(:user)
+      dave.follow(hal)
+      expect(dave.follows?(hal)).to be true
     end
   end
 

@@ -33,4 +33,8 @@ Myflix::Application.routes.draw do
 
   resources :password_resets, only: [:show, :create]
   get '/invalid_token', to: 'password_resets#invalid_token'
+
+  get '/invite', to: 'invitations#new'
+  resources :invitations, only: [:create]
+  get '/register/:token', to: 'users#new_with_invitation_token', as: 'register_with_token'
 end

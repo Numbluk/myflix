@@ -1,0 +1,5 @@
+!!! 5
+%html(lang='en-US')
+  %body
+    %p You have been invited to join MyFlix by #{@invitation.inviter.full_name}! Click the link below to sign up today!
+    = link_to 'Sign up now!', register_with_token_url(@invitation.token)

@@ -8,6 +8,8 @@ class User < ActiveRecord::Base
   has_many :following_relationships, class_name: 'Relationship', foreign_key: 'follower_id'
   has_many :leading_relationships, class_name: 'Relationship', foreign_key: 'leader_id'
 
+  has_many :invitations, foreign_key: 'inviter_id'
+
   has_secure_password validations: false
 
   def video_in_queue?(video)
@@ -16,6 +18,10 @@ class User < ActiveRecord::Base
 
   def follows?(another_user)
     following_relationships.where(leader: another_user).any?
+  end
+
+  def follow(another_user)
+    Relationship.create(follower: self, leader: another_user)
   end
 
   def can_follow?(another_user)
