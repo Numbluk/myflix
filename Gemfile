@@ -14,6 +14,12 @@ gem 'bcrypt'
 gem 'fabrication'
 gem 'sidekiq'
 gem 'unicorn'
+gem 'sentry-raven'
+gem 'carrierwave'
+gem 'carrierwave-aws'
+gem 'mini_magick'
+gem 'stripe'
+gem 'figaro'
 
 group :development do
   gem 'thin'

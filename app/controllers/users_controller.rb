@@ -6,12 +6,26 @@ class UsersController < ApplicationController
   end
 
   def create
-    @user = User.new(users_params)
-    if @user.save
-      users_follow_each_other_if_token(@user)
-      AppMailer.delay.send_welcome_email(@user.id)
-      redirect_to sign_in_path
-    else
+    Stripe.api_key = ENV['STRIPE_SECRET_KEY']
+    token = params[:stripeToken]
+    begin
+      charge = Stripe::Charge.create(
+        :amount => 1000, # amount in cents, again
+        :currency => "usd",
+        :source => token,
+        :description => "Example charge"
+      )
+      @user = User.new(users_params)
+      if @user.save
+        users_follow_each_other_if_token(@user)
+        AppMailer.delay.send_welcome_email(@user.id)
+        flash[:success] = 'Account successfully created.'
+        redirect_to sign_in_path
+      else
+        render :new
+      end
+    rescue Stripe::CardError => e
+      flash[:error] = e.message
       render :new
     end
   end
@@ -38,7 +52,7 @@ class UsersController < ApplicationController
   end
 
   def users_follow_each_other_if_token(user)
-    if params[:invitation_token]
+    if params[:invitation_token].present?
       invitation = Invitation.find_by(token: params[:invitation_token])
       @user.follow(invitation.inviter)
       invitation.inviter.follow(@user)
