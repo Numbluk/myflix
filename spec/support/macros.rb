@@ -20,3 +20,8 @@ def sign_in(user = Fabricate(:user))
   fill_in 'Password', with: user.password
   click_button 'Sign In'
 end
+
+def sign_out
+  session[:user_id] = nil
+  visit sign_in_path
+end

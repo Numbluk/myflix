@@ -6,26 +6,21 @@ class UsersController < ApplicationController
   end
 
   def create
-    Stripe.api_key = ENV['STRIPE_SECRET_KEY']
     token = params[:stripeToken]
-    begin
-      charge = Stripe::Charge.create(
-        :amount => 1000, # amount in cents, again
-        :currency => "usd",
-        :source => token,
-        :description => "Example charge"
-      )
-      @user = User.new(users_params)
-      if @user.save
+    @user = User.new(users_params)
+    if @user.valid?
+      response = StripeWrapper::Charge.create(amount: 1000, source: token)
+      if response.successful?
+        @user.save
         users_follow_each_other_if_token(@user)
         AppMailer.delay.send_welcome_email(@user.id)
         flash[:success] = 'Account successfully created.'
         redirect_to sign_in_path
       else
+        flash[:error] = response.error_message
         render :new
       end
-    rescue Stripe::CardError => e
-      flash[:error] = e.message
+    else
       render :new
     end
   end
