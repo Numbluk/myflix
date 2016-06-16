@@ -37,4 +37,8 @@ Myflix::Application.routes.draw do
   get '/invite', to: 'invitations#new'
   resources :invitations, only: [:create]
   get '/register/:token', to: 'users#new_with_invitation_token', as: 'register_with_token'
+
+  namespace :admin do
+    resources :videos, only: [:new, :create]
+  end
 end

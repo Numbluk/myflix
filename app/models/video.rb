@@ -4,8 +4,15 @@ class Video < ActiveRecord::Base
   has_many :queue_items
   validates_presence_of :title, :description
 
+  mount_uploader :large_cover, LargeCoverUploader
+  mount_uploader :small_cover, SmallCoverUploader
+
   def self.search_by_title(keywords)
     return [] if keywords.blank?
     Video.where('lower(title) LIKE ?', "%#{keywords}%".downcase).order('created_at DESC')
+  end
+
+  def rating
+    reviews.average(:rating).round(1) if reviews.average(:rating)
   end
 end

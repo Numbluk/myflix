@@ -1,18 +1,19 @@
 require 'spec_helper'
 
 feature 'User invites friend' do
-  scenario 'where user successfully invites a friend' do
+  scenario 'where user successfully invites a friend', { js: true, vcr: true } do
     dave = Fabricate(:user)
     sign_in(dave)
-    click_link 'Invite a Friend'
 
-    send_invitation
+    send_invitation(dave)
 
     invited_friend_clicks_link_in_email_to_register
 
     invited_friend_registers
 
-    hal = User.find_by(email: 'hal@hal.com')
+    wait = Selenium::WebDriver::Wait.new(timeout: 5)
+    hal = nil
+    wait.until { hal = User.find_by(email: 'hal@hal.com') }
     expect(hal).to be_present
 
     invited_friend_signs_in(hal)
@@ -20,11 +21,13 @@ feature 'User invites friend' do
     invited_friend_checks_if_following_inviter(dave)
   end
 
-  def send_invitation
+  def send_invitation(sender)
+    visit invite_path
     fill_in "Friend's Email", with: 'hal@hal.com'
     fill_in "Friend's Name", with: 'hal the computer'
     fill_in "Message", with: 'You should come along with me.'
     click_button 'Send Invitation'
+    click_link "Welcome, #{sender.full_name}"
     click_link 'Sign Out'
   end
 
@@ -37,6 +40,10 @@ feature 'User invites friend' do
     expect(page).to have_content 'Register'
     fill_in 'Password', with: 'password'
     fill_in 'Full Name', with: 'hal the computer'
+    fill_in 'Credit Card Number', with: '4242424242424242'
+    fill_in 'Security Code', with: '123'
+    select '6 - June', from: 'date_month'
+    select '2018', from: 'date_year'
     click_button 'Sign Up'
   end
 

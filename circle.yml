@@ -1,0 +1,19 @@
+machine:
+  ruby:
+    version: 2.1.2
+deployment:
+  production:
+    branch: master
+    commands:
+      - heroku maintenance:on --app secure-sierra-32167
+      - heroku pg:backups capture --app secure-sierra-32167
+      - git push git@heroku.com:secure-sierra-32167.git $CIRCLE_SHA1:refs/heads/master
+      - heroku run rake db:migrate --app secure-sierra-32167
+      - heroku maintenance:off --app secure-sierra-32167
+  staging:
+    branch: staging
+    commands:
+      - heroku maintenance:on --app frozen-beyond-55431
+      - git push git@heroku.com:frozen-beyond-55431.git $CIRCLE_SHA1:refs/heads/master
+      - heroku run rake db:migrate --app frozen-beyond-55431
+      - heroku maintenance:off --app frozen-beyond-55431

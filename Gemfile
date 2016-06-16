@@ -14,6 +14,13 @@ gem 'bcrypt'
 gem 'fabrication'
 gem 'sidekiq'
 gem 'unicorn'
+gem 'sentry-raven'
+gem 'carrierwave'
+gem 'carrierwave-aws'
+gem 'mini_magick'
+gem 'stripe'
+gem 'figaro'
+gem 'draper'
 
 group :development do
   gem 'thin'
@@ -36,6 +43,9 @@ group :test do
   gem 'capybara'
   gem 'launchy'
   gem 'capybara-email'
+  gem 'webmock'
+  gem 'selenium-webdriver'
+  gem 'chromedriver-helper'
 end
 
 group :production do
