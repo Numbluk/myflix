@@ -6,21 +6,14 @@ class UsersController < ApplicationController
   end
 
   def create
-    token = params[:stripeToken]
     @user = User.new(users_params)
-    if @user.valid?
-      response = StripeWrapper::Charge.create(amount: 1000, source: token)
-      if response.successful?
-        @user.save
-        users_follow_each_other_if_token(@user)
-        AppMailer.delay.send_welcome_email(@user.id)
-        flash[:success] = 'Account successfully created.'
-        redirect_to sign_in_path
-      else
-        flash[:error] = response.error_message
-        render :new
-      end
+    result = RegisterUsers.new(@user).register(params[:stripeToken], params[:invitation_token])
+
+    if result.successful?
+      flash[:success] = 'Account successfully created.'
+      redirect_to sign_in_path
     else
+      flash[:error] = result.error_message
       render :new
     end
   end
@@ -46,12 +39,4 @@ class UsersController < ApplicationController
     params.require(:user).permit!
   end
 
-  def users_follow_each_other_if_token(user)
-    if params[:invitation_token].present?
-      invitation = Invitation.find_by(token: params[:invitation_token])
-      @user.follow(invitation.inviter)
-      invitation.inviter.follow(@user)
-      Invitation.delete(invitation.id)
-    end
-  end
 end
